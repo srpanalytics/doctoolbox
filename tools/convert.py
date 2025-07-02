@@ -7,7 +7,7 @@ from datetime import datetime
 import shutil
 
 def convert_pdf(uploaded_file, convert_to_label):
-    # Map label to extension
+    # Clean extension mapping
     convert_map = {
         "Word (.docx)": "docx",
         "Excel (.xlsx)": "xlsx",
@@ -16,33 +16,32 @@ def convert_pdf(uploaded_file, convert_to_label):
         "HTML (.html)": "html",
         "PDF/A (.pdf)": "pdf"
     }
-
     ext = convert_map.get(convert_to_label, "pdf")
 
-    # Save uploaded PDF to temp path
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-        uploaded_file.seek(0)
-        tmp.write(uploaded_file.read())
-        tmp_path = tmp.name
+    # 1. Save uploaded PDF to disk
+    input_path = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf").name
+    with open(input_path, "wb") as f:
+        f.write(uploaded_file.read())
 
-    output_path = os.path.join(tempfile.gettempdir(), f"converted_{datetime.now().strftime('%Y%m%d%H%M%S')}.{ext}")
+    # 2. Generate clean output filename
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    output_path = os.path.join(tempfile.gettempdir(), f"converted_{timestamp}.{ext}")
 
+    # 3. Handle different formats
     if ext == "docx":
-        converter = Converter(tmp_path)
+        converter = Converter(input_path)
         converter.convert(output_path)
         converter.close()
 
     elif ext == "jpg":
-        images = convert_from_path(tmp_path)
+        images = convert_from_path(input_path)
         if images:
-            images[0].save(output_path, 'JPEG')
+            images[0].save(output_path, "JPEG")
 
     elif ext == "pdf":
-        # Just copy original for now
-        shutil.copy(tmp_path, output_path)
+        shutil.copy(input_path, output_path)
 
     else:
-        # Excel/PPT/HTML → not supported locally, placeholder
-        shutil.copy(tmp_path, output_path)
+        shutil.copy(input_path, output_path)
 
     return output_path
