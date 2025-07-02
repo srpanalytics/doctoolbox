@@ -93,8 +93,11 @@ with tab5:
         os.remove(watermarked)
 
 # ---- Tab 6: Convert ----
+from datetime import datetime
+
 with tab6:
     st.subheader("🔄 Convert PDF")
+
     convert_file = st.file_uploader("Upload PDF", type=["pdf"], key="convert_upload")
 
     convert_options = {
@@ -103,7 +106,7 @@ with tab6:
         "PowerPoint (.pptx)": "pptx",
         "Image (.jpg)": "jpg",
         "HTML (.html)": "html",
-        "PDF/A": "pdf"
+        "PDF/A (.pdf)": "pdf"
     }
 
     convert_choice = st.selectbox("Convert To", list(convert_options.keys()))
@@ -112,11 +115,8 @@ with tab6:
     if convert_file and st.button("🔁 Convert"):
         with st.spinner("Converting..."):
             output_file = convert_pdf(convert_file, convert_choice)
+
         st.success("✅ Conversion complete!")
-with open(output_file, "rb") as f:
-    st.download_button(
-        f"📥 Download Converted File",
-        f,
-        file_name=f"converted_{extension}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{extension}"
-    )
-os.remove(output_file)
+        download_name = f"converted_{datetime.now().strftime('%Y%m%d%H%M%S')}.{extension}"
+        with open(output_file, "rb") as f:
+            st.download_button(f"📥 Download Converted File", f, file_name=download_name)

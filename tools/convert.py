@@ -6,35 +6,43 @@ from PIL import Image
 from datetime import datetime
 import shutil
 
-def convert_pdf(uploaded_file, convert_to):
-    # Save uploaded file to disk first
-    input_tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-    uploaded_file.seek(0)
-    input_tmp.write(uploaded_file.read())
-    input_tmp.close()
-    input_path = input_tmp.name
+def convert_pdf(uploaded_file, convert_to_label):
+    # Map label to extension
+    convert_map = {
+        "Word (.docx)": "docx",
+        "Excel (.xlsx)": "xlsx",
+        "PowerPoint (.pptx)": "pptx",
+        "Image (.jpg)": "jpg",
+        "HTML (.html)": "html",
+        "PDF/A (.pdf)": "pdf"
+    }
 
-    # Unique filename using timestamp
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    ext = convert_to.split('.')[-1]
-    output_path = os.path.join(tempfile.gettempdir(), f"converted_{timestamp}.{ext}")
+    ext = convert_map.get(convert_to_label, "pdf")
 
-    if convert_to == "Word (.docx)":
-        converter = Converter(input_path)
+    # Save uploaded PDF to temp path
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        uploaded_file.seek(0)
+        tmp.write(uploaded_file.read())
+        tmp_path = tmp.name
+
+    output_path = os.path.join(tempfile.gettempdir(), f"converted_{datetime.now().strftime('%Y%m%d%H%M%S')}.{ext}")
+
+    if ext == "docx":
+        converter = Converter(tmp_path)
         converter.convert(output_path)
         converter.close()
 
-    elif convert_to == "Image (.jpg)":
-        images = convert_from_path(input_path)
+    elif ext == "jpg":
+        images = convert_from_path(tmp_path)
         if images:
             images[0].save(output_path, 'JPEG')
 
-    elif convert_to == "PDF/A":
-        # Placeholder — just return original file
-        shutil.copy(input_path, output_path)
+    elif ext == "pdf":
+        # Just copy original for now
+        shutil.copy(tmp_path, output_path)
 
     else:
-        # Other conversions — basic copy for now
-        shutil.copy(input_path, output_path)
+        # Excel/PPT/HTML → not supported locally, placeholder
+        shutil.copy(tmp_path, output_path)
 
     return output_path
