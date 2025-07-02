@@ -7,6 +7,7 @@ from tools.rotate import rotate_pdf
 from tools.protect_unlock import encrypt_pdf, decrypt_pdf
 from tools.watermark import add_watermark
 from tools.convert import convert_pdf
+import uuid
 
 st.set_page_config(page_title="PDF Toolbox", layout="wide")
 
@@ -117,6 +118,6 @@ with tab6:
             output_file = convert_pdf(convert_file, convert_choice)
 
         st.success("✅ Conversion complete!")
-        download_name = f"converted_{datetime.now().strftime('%Y%m%d%H%M%S')}.{extension}"
+        download_name = f"converted_{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4().hex[:4]}.{extension}"
         with open(output_file, "rb") as f:
             st.download_button(f"📥 Download Converted File", f, file_name=download_name)
