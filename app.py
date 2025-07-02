@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+from datetime import datetime
 from tools.merge import merge_pdfs
 from tools.split import split_pdf
 from tools.rotate import rotate_pdf
@@ -112,6 +113,10 @@ with tab6:
         with st.spinner("Converting..."):
             output_file = convert_pdf(convert_file, convert_choice)
         st.success("✅ Conversion complete!")
-        with open(output_file, "rb") as f:
-            st.download_button(f"📥 Download {convert_choice}", f, file_name=f"converted.{extension}")
-        os.remove(output_file)
+with open(output_file, "rb") as f:
+    st.download_button(
+        f"📥 Download Converted File",
+        f,
+        file_name=f"converted_{extension}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{extension}"
+    )
+os.remove(output_file)
