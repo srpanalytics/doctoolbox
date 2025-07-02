@@ -103,11 +103,8 @@ with tab6:
 
     convert_options = {
         "Word (.docx)": "docx",
-        "Excel (.xlsx)": "xlsx",
-        "PowerPoint (.pptx)": "pptx",
-        "Image (.jpg)": "jpg",
-        "HTML (.html)": "html",
-        "PDF/A (.pdf)": "pdf"
+        "Image (.jpg)": "jpg"
+       
     }
 
     convert_choice = st.selectbox("Convert To", list(convert_options.keys()))
