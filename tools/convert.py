@@ -1,17 +1,18 @@
 import tempfile
-import os
 from pdf2docx import Converter
 from pdf2image import convert_from_path
 from PIL import Image
 
 def convert_pdf(uploaded_file, convert_to):
-    # Save uploaded file temporarily
+    # 1. Save uploaded file to a temporary path
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+        uploaded_file.seek(0)  # 🛠 Reset pointer to beginning
         tmp.write(uploaded_file.read())
         tmp_path = tmp.name
 
     output_ext = convert_to.split('.')[-1]
-    output_path = tempfile.NamedTemporaryFile(delete=False, suffix=f".{output_ext}").name
+    with tempfile.NamedTemporaryFile(delete=False, suffix=f".{output_ext}") as out_tmp:
+        output_path = out_tmp.name
 
     if convert_to == "Word (.docx)":
         converter = Converter(tmp_path)
@@ -24,11 +25,7 @@ def convert_pdf(uploaded_file, convert_to):
             images[0].save(output_path, 'JPEG')
 
     elif convert_to == "PDF/A":
-        # Just return the original PDF for now
+        # Just return original file as a placeholder
         return tmp_path
-
-    else:
-        with open(output_path, "wb") as out:
-            out.write(uploaded_file.read())
 
     return output_path
