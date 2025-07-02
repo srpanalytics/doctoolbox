@@ -95,11 +95,23 @@ with tab5:
 with tab6:
     st.subheader("🔄 Convert PDF")
     convert_file = st.file_uploader("Upload PDF", type=["pdf"], key="convert_upload")
-    convert_to = st.selectbox("Convert To", ["Word (.docx)", "Excel (.xlsx)", "PowerPoint (.pptx)", "Image (.jpg)", "HTML (.html)", "PDF/A"])
+
+    convert_options = {
+        "Word (.docx)": "docx",
+        "Excel (.xlsx)": "xlsx",
+        "PowerPoint (.pptx)": "pptx",
+        "Image (.jpg)": "jpg",
+        "HTML (.html)": "html",
+        "PDF/A": "pdf"
+    }
+
+    convert_choice = st.selectbox("Convert To", list(convert_options.keys()))
+    extension = convert_options[convert_choice]
+
     if convert_file and st.button("🔁 Convert"):
         with st.spinner("Converting..."):
-            output_file = convert_pdf(convert_file, convert_to)
+            output_file = convert_pdf(convert_file, convert_choice)
         st.success("✅ Conversion complete!")
         with open(output_file, "rb") as f:
-            st.download_button(f"📥 Download {convert_to}", f, file_name=f"converted.{convert_to.split('.')[-1]}")
+            st.download_button(f"📥 Download {convert_choice}", f, file_name=f"converted.{extension}")
         os.remove(output_file)
