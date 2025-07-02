@@ -9,7 +9,7 @@ from tools.convert import convert_pdf
 
 st.set_page_config(page_title="PDF Toolbox", layout="wide")
 
-st.title("🛠️ PDF Toolbox: Merge | Split | Rotate | Protect | Watermark | Convert")
+st.title("All in one Doctoolbox")
 
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📎 Merge", "✂️ Split", "🔁 Rotate",
