@@ -1,2 +1,6 @@
 streamlit
 PyPDF2
+reportlab
+pdf2docx
+pdf2image
+pillow
